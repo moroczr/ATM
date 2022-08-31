@@ -1,6 +1,8 @@
 ﻿namespace Atm.Application.Interfaces
 {
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Interface for data storage related operations.
@@ -12,8 +14,10 @@
         /// Adds an entity to the datasource.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <returns></returns>
+        /// <returns>The added item.</returns>
         T Add(T item);
+
+        void AddRange(IEnumerable<T> items);
 
         /// <summary>
         /// Reads entities from the datasource.
@@ -34,5 +38,14 @@
         /// <param name="item">The item.</param>
         /// <returns>The deleted item.</returns>
         T Delete(T item);
+
+        /// <summary>
+        /// Deletes multiple items from the datasource.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        /// <returns>The deleted items.</returns>
+        IEnumerable<T> DeleteRange(IEnumerable<T> items);
+
+        Task<List<T>> ReadAsListAsync();
     }
 }

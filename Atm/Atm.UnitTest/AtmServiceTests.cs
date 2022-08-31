@@ -25,6 +25,8 @@
         public AtmServiceTests()
         {
             this.moneySlot = Substitute.For<IRepository<MoneySlot>>();
+            this.moneySlot.ReadAsListAsync().Returns(new List<MoneySlot>());
+
             this.uow = Substitute.For<IAtmUnitOfWork>();
             this.uow.MoneySlots.Returns(this.moneySlot);
 
@@ -77,8 +79,10 @@
             return Should.ThrowAsync<ArgumentException>(this.target.DepositAsync(moneyUpload));
         }
 
-        [Fact]
-        public async Task WhenDepositIsCalledItReturnsSummaryOfTheUpload()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task WhenDepositIsCalledItReturnsSummaryOfAllSlots(bool startEmpty)
         {
             var moneyUpload = new TransactionEntity[]
             {
@@ -89,7 +93,12 @@
                 new TransactionEntity { BankNote = 20000, Qty = 5 },
             };
 
-            var expectedSummary = moneyUpload.Sum(m => m.BankNote * m.Qty);
+            
+            var testSlots = startEmpty ? new List<MoneySlot>() : GetTestMoneySlots();
+            this.moneySlot.ReadAsListAsync().Returns(testSlots);
+            
+
+            var expectedSummary = moneyUpload.Sum(m => m.BankNote * m.Qty) + testSlots.Sum(m => m.BankNote * m.Qty);
 
             var result = await this.target.DepositAsync(moneyUpload);
 
@@ -105,10 +114,20 @@
             return Should.ThrowAsync<ArgumentException>(this.target.WithdrawAsync(qty));
         }
 
+        [Theory]
+        [InlineData(1)]
+        [InlineData(1001)]
+        [InlineData(1200)]
+        [InlineData(15003)]
+        public Task WhenWithdrawAsyncIsCalledItDoesNotAcceptsNonThousands(int qty)
+        {
+            return Should.ThrowAsync<ArgumentException>(this.target.WithdrawAsync(qty));
+        }
+
         [Fact]
         public Task WhenWithdrawIsCalledItThrowsExceptionIfAmountCantBeCovered()
         {
-            this.moneySlot.Read().Returns(GetTestMoneySlots()); // 160 000 in the slots
+            this.moneySlot.ReadAsListAsync().Returns(GetTestMoneySlots()); // 160 000 in the slots
 
             return Should.ThrowAsync<ArgumentException>(this.target.WithdrawAsync(161000));
         }
@@ -117,14 +136,26 @@
         [MemberData(nameof(WithdrawTestData.GetWithdrawResultTestData), MemberType = typeof(WithdrawTestData))]
         public async Task WhenWithdrawIsCalledItReturnsBankNotesAndQuantitiesCorrectly(int amount, IEnumerable<TransactionEntity> expectedResult)
         {
+            this.moneySlot.ReadAsListAsync().Returns(GetTestMoneySlots());
+
             var result = await this.target.WithdrawAsync(amount);
 
-            result.ShouldBeEquivalentTo(expectedResult);
+            expectedResult.ShouldAllBe(e => ValidateItem(e, result));
         }
 
-        private static IQueryable GetTestMoneySlots()
+        private static bool ValidateItem(TransactionEntity expectedItem, IEnumerable<TransactionEntity> testResult)
         {
-            var slots = new MoneySlot[]
+            var resultItem = testResult.First(r => r.BankNote.Equals(expectedItem.BankNote));
+                resultItem.ShouldNotBeNull();
+                resultItem.BankNote.ShouldBe(expectedItem.BankNote);
+                resultItem.Qty.ShouldBe(expectedItem.Qty);
+
+            return true;
+        }
+
+        private static List<MoneySlot> GetTestMoneySlots()
+        {
+            var slots = new List<MoneySlot>
             {
                 new MoneySlot { BankNote = 1000, Qty = 1},
                 new MoneySlot { BankNote = 2000, Qty = 2},
@@ -133,7 +164,9 @@
                 new MoneySlot { BankNote = 20000, Qty = 5},
             };
 
-            return slots.AsQueryable();
+            return slots;
         }
+
+        
     }
 }

@@ -1,4 +1,4 @@
-namespace Atm.WebApi
+namespace Atm.RestApi
 {
     using System;
     using System.Collections.Generic;
