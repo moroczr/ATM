@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.32802.440
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atm.Infrastructure", "Atm.Infrastructure\Atm.Infrastructure.csproj", "{7A1941B4-E8C9-4D21-B849-214536668742}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atm.Infrastructure", "Atm.Infrastructure\Atm.Infrastructure.csproj", "{7A1941B4-E8C9-4D21-B849-214536668742}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atm.Domain", "Atm.Domain\Atm.Domain.csproj", "{0A8B9C0C-A6C3-49D4-868F-2AEECC3EDAC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atm.Domain", "Atm.Domain\Atm.Domain.csproj", "{0A8B9C0C-A6C3-49D4-868F-2AEECC3EDAC9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atm.Application", "Atm.Application\Atm.Application.csproj", "{98E4D25E-B85D-43EF-B1E6-62EDE2AB343B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atm.Application", "Atm.Application\Atm.Application.csproj", "{98E4D25E-B85D-43EF-B1E6-62EDE2AB343B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atm.UnitTest", "Atm.UnitTest\Atm.UnitTest.csproj", "{2FAEE6AB-8550-4A4A-B707-08027A7C2215}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atm.UnitTest", "Atm.UnitTest\Atm.UnitTest.csproj", "{2FAEE6AB-8550-4A4A-B707-08027A7C2215}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atm.WebApi", "Atm.WebApi\Atm.WebApi.csproj", "{83F67B27-E58B-4DB7-BEDB-16A584A30563}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Atm.WebApi", "Atm.WebApi\Atm.WebApi.csproj", "{83F67B27-E58B-4DB7-BEDB-16A584A30563}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
