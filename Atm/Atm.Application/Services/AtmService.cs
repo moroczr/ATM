@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Atm.Application.Exceptions;
     using Atm.Application.Interfaces;
     using Atm.Application.Models;
     using Atm.Domain.Entities;
@@ -26,13 +27,13 @@
             var currentSlots = await uow.MoneySlots.ReadAsListAsync();
             
             
-            ModifySlots(uploadSlots, currentSlots);
+            this.ModifySlots(uploadSlots, currentSlots);
 
             await uow.CommitAsync();
             return currentSlots.Sum(c => c.BankNote * c.Qty);
         }
 
-        private static void ModifySlots(IEnumerable<MoneySlot> uploadSlots, List<MoneySlot> currentSlots)
+        private void ModifySlots(IEnumerable<MoneySlot> uploadSlots, List<MoneySlot> currentSlots)
         {
             var existingBankNotes = currentSlots.Select(c => c.BankNote);
             var existingSlots = currentSlots.Where(c => existingBankNotes.Contains(c.BankNote));
@@ -47,7 +48,7 @@
                 .Where(d => !existingBankNotes.Contains(d.BankNote))
                 .Select(d => new MoneySlot { BankNote = d.BankNote, Qty = d.Qty });
 
-
+            this.uow.MoneySlots.AddRange(missingSlots);
             currentSlots.AddRange(missingSlots);
         }
 
@@ -71,7 +72,7 @@
 
             if (amount > 0)
             {
-                throw new ArgumentException("Amount can't be covered", nameof(amount));
+                throw new AmountCantBeCoveredException("Amount can't be covered.");
             }
 
             this.CleanUpSlots(currentSlots);
@@ -109,7 +110,7 @@
             // Check if request contains invalid bank note.
             if (depositDetails.Any(d => !validAmounts.Contains(d.BankNote)))
             {
-                throw new ArgumentException("Invalid banknote in deposit request.", nameof(depositDetails));
+                throw new InvalidBanknoteException("Invalid banknote in payload.");
             }
                 
             // Check if request contains invalid qty.

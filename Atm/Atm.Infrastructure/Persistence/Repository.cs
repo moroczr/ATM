@@ -3,11 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Atm.Application.Interfaces;
     using Microsoft.EntityFrameworkCore;
 
+    /// <summary>
+    /// Generic repository for CRUD operations.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <seealso cref="Atm.Application.Interfaces.IRepository&lt;T&gt;" />
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly AtmDbContext ctx;
@@ -39,11 +43,11 @@
 
         public IEnumerable<T> DeleteRange(IEnumerable<T> items)
         {
-            if (!items.Any())
+            if (items.Any())
             {
-                ctx.Set<T>().RemoveRange(items);    
+                ctx.Set<T>().RemoveRange(items);
             }
-                        
+
             return items;
         }
 

@@ -2,18 +2,24 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Atm.Application.Interfaces;
-    using Atm.RestApi.Models;
+    using Atm.Application.Models;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    /// Atm controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [ApiController]
-    [Route("[controller]")]
+    [Route("api")]
     public class AtmController : ControllerBase
     {
         private readonly IAtmService atmService;
         private readonly ILogger<AtmController> logger;
-        
+
         public AtmController(IAtmService atmService, ILogger<AtmController> logger)
         {
             this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -21,17 +27,21 @@
         }
 
         [HttpPost]
-        [Route("Withdraw")]
-        public IEnumerable<TransactionModel> Withdraw(int amount)
+        [Route("withdrawal")]
+        public async Task<Dictionary<int, int>> Withdraw(int amount)
         {
-            throw new NotImplementedException();
+            this.logger.LogInformation($"Withdraw requested with amount {amount}");
+            var result = await this.atmService.WithdrawAsync(amount);
+            return result.ToDictionary(key => key.BankNote, value => value.Qty);
         }
 
         [HttpPost]
-        [Route("Deposit")]
-        public int Deposit(IEnumerable<TransactionModel> depositDetails)
+        [Route("deposit")]
+        public Task<int> Deposit(Dictionary<int, int> request)
         {
-            throw new NotImplementedException();
+            this.logger.LogInformation("Deposit requested");
+            var payload = request.Select(c => new TransactionEntity { BankNote = c.Key, Qty = c.Value });
+            return this.atmService.DepositAsync(payload);
         }
     }
 }

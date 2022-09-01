@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Atm.Application.Exceptions;
     using Atm.Application.Interfaces;
     using Atm.Application.Models;
     using Atm.Application.Services;
@@ -62,7 +63,7 @@
                 new TransactionEntity { BankNote = bankNote, Qty = 1 },
             };
 
-            return Should.ThrowAsync<ArgumentException>(this.target.DepositAsync(moneyUpload));
+            return Should.ThrowAsync<InvalidBanknoteException>(this.target.DepositAsync(moneyUpload));
         }
 
         [Theory]
@@ -129,7 +130,7 @@
         {
             this.moneySlot.ReadAsListAsync().Returns(GetTestMoneySlots()); // 160 000 in the slots
 
-            return Should.ThrowAsync<ArgumentException>(this.target.WithdrawAsync(161000));
+            return Should.ThrowAsync<AmountCantBeCoveredException>(this.target.WithdrawAsync(161000));
         }
 
         [Theory]
